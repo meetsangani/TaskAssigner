@@ -155,23 +155,40 @@ const TaskDashboard = () => {
 
   const calculateDuration = (startTime, endTime) => {
     if (!startTime || !endTime) return 'N/A';
+    // Accept both "08:30" and "08:30:00"
+    const pad = (s) => s.length === 2 ? s : s.padStart(2, '0');
+    const [sh, sm] = startTime.split(':');
+    const [eh, em] = endTime.split(':');
+    const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
+    const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
+    let diff = (end - start) / (1000 * 60); // minutes
+    if (diff < 0) return 'N/A';
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+    return `${hours} Hour${hours !== 1 ? 's' : ''} ${minutes} Minute${minutes !== 1 ? 's' : ''}`;
+  };
 
-    const startParts = startTime.split(':');
-    const endParts = endTime.split(':');
-
-    if (startParts.length !== 2 || endParts.length !== 2) return 'N/A';
-
-    const start = new Date(`1970-01-01T${startTime}:00`);
-    const end = new Date(`1970-01-01T${endTime}:00`);
-
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) return 'N/A';
-
-    const durationMs = end - start;
-    if (durationMs <= 0) return 'N/A';
-
-    const hours = String(Math.floor(durationMs / (1000 * 60 * 60))).padStart(2, '0');
-    const minutes = String(Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
-    return `${hours} Hour ${minutes} Minute`;
+  const getAttendanceSummary = () => {
+    const monthAttendance = getMonthAttendance();
+    let totalPresent = 0;
+    let totalMinutes = 0;
+    monthAttendance.forEach(record => {
+      if (record.status === 'Present') {
+        totalPresent++;
+        if (record.startTime && record.endTime) {
+          const pad = (s) => s.length === 2 ? s : s.padStart(2, '0');
+          const [sh, sm] = record.startTime.split(':');
+          const [eh, em] = record.endTime.split(':');
+          const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
+          const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
+          let diff = (end - start) / (1000 * 60); // minutes
+          if (diff > 0) totalMinutes += diff;
+        }
+      }
+    });
+    const totalHours = Math.floor(totalMinutes / 60);
+    const totalRemMinutes = totalMinutes % 60;
+    return { totalPresent, totalHours, totalRemMinutes };
   };
 
   const downloadPDF = () => {
@@ -190,17 +207,21 @@ const TaskDashboard = () => {
     const summaryYPosition = 30;
     doc.setFontSize(12);
     doc.text("Summary:", 14, summaryYPosition);
+
+    const { totalPresent, totalHours, totalRemMinutes } = getAttendanceSummary();
     doc.text(`- Present: ${attendanceStats.present}`, 14, summaryYPosition + 10);
     doc.text(`- Absent: ${attendanceStats.absent}`, 14, summaryYPosition + 20);
+    doc.text(`- Total Present Days: ${totalPresent}`, 14, summaryYPosition + 30);
+    doc.text(`- Total Working Hours: ${totalHours} Hours ${totalRemMinutes} Minutes`, 14, summaryYPosition + 40);
 
     let yPosition = doc.autoTable({
-      startY: summaryYPosition + 30,
+      startY: summaryYPosition + 50,
       styles: { cellPadding: 3, fontSize: 10 },
       headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
       bodyStyles: { lineColor: [200, 200, 200], lineWidth: 0.1 },
       tableWidth: 'wrap',
       margin: { horizontal: 10 },
-    }).finalY || summaryYPosition + 40;
+    }).finalY || summaryYPosition + 60;
 
     const tableDataWithTime = getMonthAttendance().map((record) => {
       let duration = 'N/A';
@@ -458,6 +479,9 @@ const TaskDashboard = () => {
                         <tr>
                           <th style={{ padding: '10px', border: '1px solid #ccc' }}>Date</th>
                           <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>Status</th>
+                          <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>Start Time</th>
+                          <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>End Time</th>
+                          <th style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>Duration</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -477,6 +501,17 @@ const TaskDashboard = () => {
                               }}>
                                 {record.status}
                               </span>
+                            </td>
+                            <td style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>
+                              {record.status === 'Present' ? record.startTime || 'N/A' : 'N/A'}
+                            </td>
+                            <td style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>
+                              {record.status === 'Present' ? record.endTime || 'N/A' : 'N/A'}
+                            </td>
+                            <td style={{ padding: '10px', border: '1px solid #ccc', textAlign: 'center' }}>
+                              {record.status === 'Present' && record.startTime && record.endTime
+                                ? calculateDuration(record.startTime, record.endTime)
+                                : 'N/A'}
                             </td>
                           </tr>
                         ))}
