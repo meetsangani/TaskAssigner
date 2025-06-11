@@ -151,6 +151,45 @@ const HrDashboard = () => {
     setAttendanceStats({ present, absent });
   };
 
+  // Calculate duration between start and end time
+  const calculateDuration = (startTime, endTime) => {
+    if (!startTime || !endTime) return 'N/A';
+    const pad = (s) => s.length === 2 ? s : s.padStart(2, '0');
+    const [sh, sm] = startTime.split(':');
+    const [eh, em] = endTime.split(':');
+    const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
+    const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
+    let diff = (end - start) / (1000 * 60); // minutes
+    if (diff < 0) return 'N/A';
+    const hours = Math.floor(diff / 60);
+    const minutes = diff % 60;
+    return `${hours} Hour${hours !== 1 ? 's' : ''} ${minutes} Minute${minutes !== 1 ? 's' : ''}`;
+  };
+
+  // Calculate total present days and total hours for the month
+  const getAttendanceSummary = () => {
+    const monthAttendance = getMonthAttendance();
+    let totalPresent = 0;
+    let totalMinutes = 0;
+    monthAttendance.forEach(record => {
+      if (record.status === 'Present') {
+        totalPresent++;
+        if (record.startTime && record.endTime) {
+          const pad = (s) => s.length === 2 ? s : s.padStart(2, '0');
+          const [sh, sm] = record.startTime.split(':');
+          const [eh, em] = record.endTime.split(':');
+          const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
+          const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
+          let diff = (end - start) / (1000 * 60); // minutes
+          if (diff > 0) totalMinutes += diff;
+        }
+      }
+    });
+    const totalHours = Math.floor(totalMinutes / 60);
+    const totalRemMinutes = totalMinutes % 60;
+    return { totalPresent, totalHours, totalRemMinutes };
+  };
+
   const pieChartData = {
     labels: ['Present', 'Absent'],
     datasets: [{
@@ -184,19 +223,27 @@ const HrDashboard = () => {
     const summaryYPosition = 30;
     doc.setFontSize(12);
     doc.text("Summary:", 14, summaryYPosition);
+
+    // Add total present and total hours
+    const { totalPresent, totalHours, totalRemMinutes } = getAttendanceSummary();
     doc.text(`- Present: ${attendanceStats.present}`, 14, summaryYPosition + 10);
     doc.text(`- Absent: ${attendanceStats.absent}`, 14, summaryYPosition + 20);
+    doc.text(`- Total Present Days: ${totalPresent}`, 14, summaryYPosition + 30);
+    doc.text(`- Total Working Hours: ${totalHours} Hours ${totalRemMinutes} Minutes`, 14, summaryYPosition + 40);
 
     const tableData = getMonthAttendance().map(record => [
       format(record.date, 'dd-MM-yyyy'),
       record.status,
       record.startTime || 'N/A',
-      record.endTime || 'N/A'
+      record.endTime || 'N/A',
+      record.status === 'Present' && record.startTime && record.endTime
+        ? calculateDuration(record.startTime, record.endTime)
+        : 'N/A'
     ]);
 
     doc.autoTable({
-      startY: summaryYPosition + 30,
-      head: [['Date', 'Status', 'Start Time', 'End Time']],
+      startY: summaryYPosition + 50,
+      head: [['Date', 'Status', 'Start Time', 'End Time', 'Duration']],
       body: tableData,
       styles: { cellPadding: 3, fontSize: 10 },
       headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255] },
@@ -235,13 +282,21 @@ const HrDashboard = () => {
       title: 'Start Time',
       dataIndex: 'startTime',
       key: 'startTime',
-      render: (time) => time || 'N/A',
+      render: (time, record) => record.status === 'Present' ? (time || 'N/A') : 'N/A',
     },
     {
       title: 'End Time',
       dataIndex: 'endTime',
       key: 'endTime',
-      render: (time) => time || 'N/A',
+      render: (time, record) => record.status === 'Present' ? (time || 'N/A') : 'N/A',
+    },
+    {
+      title: 'Duration',
+      key: 'duration',
+      render: (_, record) =>
+        record.status === 'Present' && record.startTime && record.endTime
+          ? calculateDuration(record.startTime, record.endTime)
+          : 'N/A',
     },
   ];
 
@@ -457,4 +512,4 @@ const HrDashboard = () => {
   );
 };
 
-export default HrDashboard; 
+export default HrDashboard;

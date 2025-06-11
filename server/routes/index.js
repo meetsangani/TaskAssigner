@@ -9,6 +9,7 @@ const taskController = require('../controller/TaskController')
 const searchUser = require('../controller/searchUser');
 const descriptionController = require('../controller/descriptionController');
 const loginUser = require('../controller/login');
+const attendanceController = require('../controller/AttendanceController');
 const router = express.Router();
 
 router.post('/register', registerUser);
@@ -32,6 +33,10 @@ router.delete('/tasks/:id', taskController.deleteTask);
 // descriptions
 router.post('/descriptions', descriptionController.addDescription);
 router.get('/descriptions', descriptionController.getDescriptions);
+
+// Attendance report and PDF
+router.get('/attendance-report', attendanceController.getAttendanceReport);
+router.get('/attendance-report/pdf', attendanceController.downloadAttendancePDF);
 
 // router.put('/update-user', updateUserDetails);
 
