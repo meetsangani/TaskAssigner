@@ -7,7 +7,7 @@ import OTPVerification from './components/OTPVerification';
 import CreatePassword from './components/CreatePassword';
 import TaskManager from './components/TaskManager';
 import TaskDashboard from './components/TaskDashboard';
-import TaskDescription from './components/TaskDescription'; // Import the new component
+import TaskDescription from './components/TaskDescription'; 
 import HrDashboard from './components/HrDashboard';
 
 
@@ -24,8 +24,8 @@ function App() {
           <Route path="/OTPVerification" element={<OTPVerification />} />
           <Route path="/CreatePassword" element={<CreatePassword />} />
           <Route path="/TaskManager" element={<TaskManager />} />
-          <Route path="/TaskDashboard" element={<TaskDashboard />} />
-          <Route path="/TaskDescription" element={<TaskDescription />} /> {/* Add the new route */}
+          <Route path="/TaskDashboard" element={<TaskDashboard />} />
+          <Route path="/TaskDescription" element={<TaskDescription />} />
           <Route path="/HrDashboard" element={<HrDashboard />} />
         </Routes>
       </div>

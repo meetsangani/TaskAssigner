@@ -11,28 +11,22 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        // Check if OTP is verified
         if (user.otp) {
             return res.status(400).json({ message: "Please verify your OTP first" });
         }
 
-        // Check password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        // Generate JWT token
         const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
-        // Store the token in the user's document in MongoDB
         user.token = token;
-        await user.save(); // Save the updated user document  
+        await user.save();  
 
-        // Set the token in a cookie (for web-based apps)
         res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax' });
 
-        // Redirect based on user role
         let redirectTo = '/TaskManager';
         if (user.role === 'admin') {
             redirectTo = '/TaskDashboard';

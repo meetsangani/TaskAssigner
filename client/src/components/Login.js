@@ -31,7 +31,7 @@ function Login() {
             .then(async (response) => {
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem('token', data.token); // Store the token
+                    localStorage.setItem('token', data.token);
                     navigate(data.redirectTo);
                 } else {
                     const errorData = await response.json();

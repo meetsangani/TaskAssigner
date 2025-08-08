@@ -12,7 +12,7 @@ const taskSchema = new mongoose.Schema({
   descriptionId: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Description'
-    // Making it optional rather than required
+    
   },
   timeSlots: [
     {

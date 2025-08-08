@@ -12,21 +12,18 @@ function OTPVerification() {
     const inputRefs = useRef([]);
     const [error, setError] = useState(null);
 
-    // Handle OTP input change
     const handleChange = (index, value) => {
-        if (isNaN(value) || value.length > 1) return; // Allow only single digits
+        if (isNaN(value) || value.length > 1) return; 
 
         const newOtp = [...otp];
         newOtp[index] = value;
         setOtp(newOtp);
 
-        // Focus on next input
         if (value && index < 5) {
             inputRefs.current[index + 1]?.focus();
         }
     };
 
-    // Verify OTP
     const otpsend = async () => {
         const enteredOtp = otp.join('');
 
@@ -40,7 +37,7 @@ function OTPVerification() {
                 otp: enteredOtp,
             });
             alert(response.data.message);
-            navigate('/CreatePassword', { state: { email: location.state.email } }); // Pass email to CreatePassword page
+            navigate('/CreatePassword', { state: { email: location.state.email } }); 
         } catch (err) {
             console.error("Error during OTP verification:", err);
             setError(err.response?.data?.message || "Something went wrong. Please try again.");

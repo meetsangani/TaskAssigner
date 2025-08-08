@@ -30,7 +30,6 @@ exports.downloadAttendancePDF = async (req, res) => {
       date: { $gte: start, $lt: end }
     }).populate('user', 'name email');
 
-    // PDF generation
     const doc = new PDFDocument();
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=attendance_${month}_${year}.pdf`);
@@ -39,7 +38,6 @@ exports.downloadAttendancePDF = async (req, res) => {
     doc.fontSize(18).text(`Attendance Report - ${month}/${year}`, { align: 'center' });
     doc.moveDown();
 
-    // Table header
     doc.fontSize(12).text('Name', 50, doc.y, { continued: true });
     doc.text('Email', 150, doc.y, { continued: true });
     doc.text('Date', 300, doc.y, { continued: true });
@@ -47,8 +45,6 @@ exports.downloadAttendancePDF = async (req, res) => {
     doc.text('End', 440, doc.y, { continued: true });
     doc.text('Duration (hrs)', 500, doc.y);
     doc.moveDown();
-
-    // Table rows
     records.forEach(r => {
       doc.text(r.user.name, 50, doc.y, { continued: true });
       doc.text(r.user.email, 150, doc.y, { continued: true });

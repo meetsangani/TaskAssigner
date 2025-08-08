@@ -5,20 +5,18 @@ require('dotenv').config({ path: '../../.env' });
 const User = require('../models/UserModel');
 const Description = require('../models/DescriptionModel');
 const Task = require('../models/TaskModel');
-const Attendance = require('../models/AttendanceModel'); // You need to create this model
+const Attendance = require('../models/AttendanceModel'); 
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://meetpatel26315:9suRmJXPmO0PUnsy@cluster0.k4qwy.mongodb.net/TaskAssigner';
 
 async function seed() {
   await mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  // Clear existing data
   await User.deleteMany({});
   await Description.deleteMany({});
   await Task.deleteMany({});
-  await Attendance.deleteMany({}); // Clear attendance
+  await Attendance.deleteMany({});
 
-  // Add specific admin and hr users
   const prakashPassword = await bcrypt.hash('prakash123', 10);
   const hrPassword = await bcrypt.hash('hr123', 10);
   const specialUsers = [
@@ -41,7 +39,6 @@ async function seed() {
   ];
   await User.insertMany(specialUsers);
 
-  // Create 10 users
   const users = [];
   for (let i = 1; i <= 10; i++) {
     const hashedPassword = await bcrypt.hash(`Password${i}`, 10);
@@ -51,12 +48,11 @@ async function seed() {
       email: `user${i}@example.com`,
       password: hashedPassword,
       profile_pic: '',
-      role: 'user' // Changed to 'user'
+      role: 'user'
     }));
   }
   await User.insertMany(users);
 
-  // For each user, create 5 descriptions and 5 tasks (all in March)
   const allUsers = await User.find({});
   for (const user of allUsers) {
     const descriptions = [];
@@ -70,9 +66,8 @@ async function seed() {
     }
     const savedDescriptions = await Description.insertMany(descriptions);
 
-    // For each description, create a task on a different day in March
     for (let k = 0; k < 5; k++) {
-      const day = 10 + k; // Days 10-14 March
+      const day = 10 + k; 
       await Task.create({
         learning: `Learning note ${k + 1} for ${user.name}`,
         startTime: new Date(`2024-03-${day}T09:00:00Z`),
@@ -103,15 +98,14 @@ async function seed() {
     }
   }
 
-  // Attendance seeding for Feb, Mar, Apr (up to 18th) 2025
   const months = [
-    { month: 2, days: 28 }, // Feb 2025
-    { month: 3, days: 31 }, // Mar 2025
-    { month: 4, days: 18 }  // Apr 2025 (up to 18th)
+    { month: 2, days: 28 }, 
+    { month: 3, days: 31 }, 
+    { month: 4, days: 18 }  
   ];
   const startTime = "08:30";
   const endTime = "17:00";
-  const duration = 8.5; // hours
+  const duration = 8.5; 
 
   for (const user of allUsers) {
     for (const m of months) {
@@ -127,13 +121,11 @@ async function seed() {
     }
   }
 
-  // Seed descriptions and tasks for every user from 02-Feb-2025 to 05-Apr-2025
   const startDate = new Date('2025-02-02');
   const endDate = new Date('2025-04-05');
   for (const user of allUsers) {
     let current = new Date(startDate);
     while (current <= endDate) {
-      // Create a description for the day
       const desc = await Description.create({
         title: `Daily Task for ${user.name} on ${current.toISOString().slice(0, 10)}`,
         description: `Auto-generated description for ${user.name} on ${current.toISOString().slice(0, 10)}`,
@@ -142,7 +134,6 @@ async function seed() {
         updatedAt: new Date(current)
       });
 
-      // Create a task for the day, referencing the description
       await Task.create({
         learning: `Learning note for ${user.name} on ${current.toISOString().slice(0, 10)}`,
         startTime: new Date(`${current.toISOString().slice(0, 10)}T09:00:00Z`),
@@ -166,14 +157,12 @@ async function seed() {
         updatedAt: new Date(current)
       });
 
-      // Next day
       current.setDate(current.getDate() + 1);
     }
   }
 
   console.log('Seed data inserted successfully!');
 
-  // Find user1 and print email and password hash
   const user1 = await User.findOne({ name: 'User1' });
   if (user1) {
     console.log(`User1 email: user1@example.com`);

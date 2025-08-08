@@ -32,26 +32,22 @@ const HrDashboard = () => {
   const [learningNotes, setLearningNotes] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch users and tasks
   useEffect(() => {
     fetchUsers();
     fetchTasks();
   }, []);
 
-  // Update attendance stats when user or month changes
   useEffect(() => {
     if (selectedUser) {
       updateAttendanceStats();
     }
   }, [selectedUser, currentMonth, tasks]);
 
-  // Add this new fetch function
   const fetchLearningNotes = async () => {
     if (selectedUser) {
       try {
         const response = await axios.get('http://localhost:8000/api/tasks');
         const userTasks = response.data.filter(task => task.user === selectedUser);
-        // Sort tasks by date in descending order (latest first)
         const sortedTasks = userTasks.sort((a, b) => 
           new Date(b.createdAt) - new Date(a.createdAt)
         );
@@ -62,7 +58,6 @@ const HrDashboard = () => {
     }
   };
 
-  // Update useEffect to fetch learning notes when user changes
   useEffect(() => {
     if (selectedUser) {
       fetchLearningNotes();
@@ -89,9 +84,8 @@ const HrDashboard = () => {
   };
 
   const holidays = [
-    '2025-01-14', // Makar Sankranti
-    '2025-01-26', // Republic Day',
-    // ... (બાકીની holidays તમારી existing list માંથી)
+    '2025-01-14', 
+    '2025-01-26', 
   ];
 
   const isHoliday = (date) => {
@@ -102,7 +96,6 @@ const HrDashboard = () => {
       const holidayNames = {
         '2025-01-14': 'Makar Sankranti',
         '2025-01-26': 'Republic Day',
-        // ... (બાકીના holiday names તમારી existing list માંથી)
       };
       return holidayNames[holiday];
     }
@@ -151,7 +144,6 @@ const HrDashboard = () => {
     setAttendanceStats({ present, absent });
   };
 
-  // Calculate duration between start and end time
   const calculateDuration = (startTime, endTime) => {
     if (!startTime || !endTime) return 'N/A';
     const pad = (s) => s.length === 2 ? s : s.padStart(2, '0');
@@ -159,14 +151,13 @@ const HrDashboard = () => {
     const [eh, em] = endTime.split(':');
     const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
     const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
-    let diff = (end - start) / (1000 * 60); // minutes
+    let diff = (end - start) / (1000 * 60);
     if (diff < 0) return 'N/A';
     const hours = Math.floor(diff / 60);
     const minutes = diff % 60;
     return `${hours} Hour${hours !== 1 ? 's' : ''} ${minutes} Minute${minutes !== 1 ? 's' : ''}`;
   };
 
-  // Calculate total present days and total hours for the month
   const getAttendanceSummary = () => {
     const monthAttendance = getMonthAttendance();
     let totalPresent = 0;
@@ -180,7 +171,7 @@ const HrDashboard = () => {
           const [eh, em] = record.endTime.split(':');
           const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
           const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
-          let diff = (end - start) / (1000 * 60); // minutes
+          let diff = (end - start) / (1000 * 60);
           if (diff > 0) totalMinutes += diff;
         }
       }
@@ -224,7 +215,6 @@ const HrDashboard = () => {
     doc.setFontSize(12);
     doc.text("Summary:", 14, summaryYPosition);
 
-    // Add total present and total hours
     const { totalPresent, totalHours, totalRemMinutes } = getAttendanceSummary();
     doc.text(`- Present: ${attendanceStats.present}`, 14, summaryYPosition + 10);
     doc.text(`- Absent: ${attendanceStats.absent}`, 14, summaryYPosition + 20);
@@ -300,7 +290,6 @@ const HrDashboard = () => {
     },
   ];
 
-  // Add new columns for learning notes table
   const learningColumns = [
     {
       title: 'Date',
@@ -350,7 +339,7 @@ const HrDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/'); // Redirect to login page
+    navigate('/'); 
   };
 
   return (
@@ -445,7 +434,7 @@ const HrDashboard = () => {
             margin: '20px 0'
           }}>
             <img 
-              src={welcomeImage} // Add your welcome image here
+              src={welcomeImage} 
               alt="Welcome"
               style={{
                 width: '200px',

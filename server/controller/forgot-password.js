@@ -3,19 +3,17 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 
-// Configure email transporter
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587, // Use 587 for TLS
-    secure: false, // Set to false for TLS
+    port: 587, 
+    secure: false, 
     service: "gmail",
     auth: {
-        user: process.env.EMAIL_USER, // Replace with your email
-        pass: process.env.EMAIL_PASS // Replace with your email password or app password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
-// 1. Send OTP to email
 exports.send_otp = async (req, res) => {
     const { email } = req.body;
 
@@ -28,7 +26,6 @@ exports.send_otp = async (req, res) => {
         return res.status(404).json({ message: "Email not found." });
     }
 
-    // Generate a 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.otp = otp;
     await user.save();
@@ -48,7 +45,6 @@ exports.send_otp = async (req, res) => {
     });
 };
 
-// 2. Verify OTP
 exports.verify_otp = async (req, res) => {
     const { otp } = req.body;
 
@@ -63,7 +59,6 @@ exports.verify_otp = async (req, res) => {
             return res.status(400).json({ message: "Invalid OTP." });
         }
 
-        // Clear OTP after successful verification
         user.otp = null;
         await user.save();
 
@@ -74,9 +69,6 @@ exports.verify_otp = async (req, res) => {
     }
 };
 
-// 3. Update password
-
-//main
 exports.update_password = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
 
@@ -94,7 +86,6 @@ exports.update_password = async (req, res) => {
         return res.status(400).json({ message: "Invalid email." });
     }
 
-    // Update password
     user.password = await bcrypt.hash(password, 10);
     await user.save();
 

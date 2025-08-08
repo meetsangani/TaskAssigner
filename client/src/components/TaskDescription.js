@@ -7,7 +7,7 @@ const TaskDescription = ({ isOpen, onClose, onSubmit, user }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const taskData = { title, description };
-    onSubmit(taskData); // Call the onSubmit function with the taskData
+    onSubmit(taskData); 
   };
 
   return (

@@ -20,7 +20,7 @@ const TaskDashboard = () => {
   const [taskDescriptions, setTaskDescriptions] = useState([]);
   const [user, setUser] = useState({});
   const [statusFilter, setStatusFilter] = useState('');
-  const [showTaskDescriptions, setShowTaskDescriptions] = useState(false); // New state for showing task descriptions
+  const [showTaskDescriptions, setShowTaskDescriptions] = useState(false); 
 
   useEffect(() => {
     let userFilteredTasks = tasks;
@@ -55,7 +55,7 @@ const TaskDashboard = () => {
       .then((response) => {
         setIsPopupOpen(false);
         setTaskDescriptions([...taskDescriptions, response.data]);
-        fetchTasks(); // Refresh tasks after adding a new one
+        fetchTasks(); 
       })
       .catch((err) => console.log(err));
   };
@@ -100,25 +100,25 @@ const TaskDashboard = () => {
   };
 
   const holidays = [
-    '2025-01-14', // Makar Sankranti
-    '2025-01-26', // Republic Day
-    '2025-02-26', // Maha Shivaratri
-    '2025-03-14', // Holi
-    '2025-03-31', // Ramjan-Eid (Eid-Ul-Fitra)
-    '2025-04-10', // Mahavir Janma Kalyanak
-    '2025-04-14', // Dr. B.R. Ambedkar Jayanti
-    '2025-04-18', // Good Friday
-    '2025-04-29', // Bhagvan Shree Parshuram Jayanti
-    '2025-06-07', // Eid-Ul-Adha (Bakri-Eid)
-    '2025-08-15', // Independence Day
-    '2025-08-16', // Janmashtami
-    '2025-08-27', // Ganesh Chaturthi
-    '2025-10-02', // Gandhi Jayanti
-    '2025-10-21', // Diwali
-    '2025-10-22', // Govardhan Puja
-    '2025-10-27', // Chhat Puja
-    '2025-11-19', // Guru Nanak Jayanti
-    '2025-12-25', // Christmas Day 
+    '2025-01-14',
+    '2025-01-26',
+    '2025-02-26',
+    '2025-03-14',
+    '2025-03-31',
+    '2025-04-10',
+    '2025-04-14',
+    '2025-04-18',
+    '2025-04-29',
+    '2025-06-07',
+    '2025-08-15',
+    '2025-08-16',
+    '2025-08-27',
+    '2025-10-02',
+    '2025-10-21',
+    '2025-10-22',
+    '2025-10-27',
+    '2025-11-19',
+    '2025-12-25',
   ];
 
   const isHoliday = (date) => {
@@ -155,13 +155,12 @@ const TaskDashboard = () => {
 
   const calculateDuration = (startTime, endTime) => {
     if (!startTime || !endTime) return 'N/A';
-    // Accept both "08:30" and "08:30:00"
     const pad = (s) => s.length === 2 ? s : s.padStart(2, '0');
     const [sh, sm] = startTime.split(':');
     const [eh, em] = endTime.split(':');
     const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
     const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
-    let diff = (end - start) / (1000 * 60); // minutes
+    let diff = (end - start) / (1000 * 60); 
     if (diff < 0) return 'N/A';
     const hours = Math.floor(diff / 60);
     const minutes = diff % 60;
@@ -181,7 +180,7 @@ const TaskDashboard = () => {
           const [eh, em] = record.endTime.split(':');
           const start = new Date(1970, 0, 1, Number(pad(sh)), Number(pad(sm)), 0);
           const end = new Date(1970, 0, 1, Number(pad(eh)), Number(pad(em)), 0);
-          let diff = (end - start) / (1000 * 60); // minutes
+          let diff = (end - start) / (1000 * 60); 
           if (diff > 0) totalMinutes += diff;
         }
       }
@@ -553,7 +552,7 @@ const TaskDashboard = () => {
                         className="card"
                         key={index}
                         style={{
-                          flex: '1 1 calc(33.333% - 20px)', // 3 items per row with gap
+                          flex: '1 1 calc(33.333% - 20px)',
                           border: '1px solid #ccc',
                           borderRadius: '5px',
                           backgroundColor: 'white',

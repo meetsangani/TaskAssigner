@@ -6,7 +6,6 @@ function ForgotPassword() {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,7 +23,7 @@ function ForgotPassword() {
             const data = await response.json();
             if (response.ok) {
                 alert(data.message);
-                navigate('/OTPVerification', { state: { email } }); // Pass email to OTPVerification page
+                navigate('/OTPVerification', { state: { email } }); 
             } else {
                 alert(data.message);
             }

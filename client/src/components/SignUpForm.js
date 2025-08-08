@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './styles.css';
-// import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = () => {
@@ -16,7 +15,7 @@ const SignUpForm = () => {
 
     const handleImageUpload = (e) => {
       const file = e.target.files[0];
-      const maxSize = 300 * 1024; // 300 KB in bytes
+      const maxSize = 300 * 1024; 
   
       if (file && file.type.startsWith('image/')) {
         if (file.size > maxSize) {
@@ -24,7 +23,7 @@ const SignUpForm = () => {
         } else {
           setFormData({
             ...formData,
-            profile_pic: URL.createObjectURL(file), // Set the uploaded image for preview
+            profile_pic: URL.createObjectURL(file), 
           });
           alert('Image uploaded successfully!');
         }
@@ -55,7 +54,7 @@ const SignUpForm = () => {
         .then(async (response) => {
           if (response.ok) {
             alert('Registration successful! Please log in.');
-            navigate('/'); // Redirect to Login page after successful registration
+            navigate('/'); 
           } else {
             const errorData = await response.json();
             console.error('Signup failed:', errorData);
@@ -100,7 +99,7 @@ const SignUpForm = () => {
                   name="profile_pic"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  style={{ display: 'none' }} // Make the input invisible
+                  style={{ display: 'none' }} 
                 />
               </div>
 

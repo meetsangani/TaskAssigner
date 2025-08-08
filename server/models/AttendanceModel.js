@@ -5,7 +5,7 @@ const AttendanceSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   startTime: { type: String, required: true },
   endTime: { type: String, required: true },
-  duration: { type: Number, required: true } // in hours
+  duration: { type: Number, required: true } 
 });
 
 module.exports = mongoose.model('Attendance', AttendanceSchema);

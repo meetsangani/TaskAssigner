@@ -67,7 +67,7 @@ const TaskManager = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Start loading
+    setLoading(true); 
     setSuccess(false);
   
     if (!startTime || !endTime) {
@@ -82,12 +82,11 @@ const TaskManager = () => {
       return;
     }
   
-    // Use destructuring to clearly see what data we're sending
     const taskData = {
       learning: learningNotes,
       startTime: startTime,
       endTime: endTime,
-      user: loggedInUser._id, // Ensure this is correctly referenced
+      user: loggedInUser._id, 
       descriptionId: selectedTask,
       timeSlots: timeBlocks.map((block) => ({
         startTime: block.time.split(' to ')[0],
@@ -108,7 +107,6 @@ const TaskManager = () => {
       });
       
       setSuccess(true);
-      // Reset form after successful submission
       setLearningNotes('');
       setTimeBlocks([
         { id: 1, time: '8:00:00 to 9:00:00', description: '' },
@@ -232,7 +230,7 @@ const TaskManager = () => {
     : assignedTasks;
 
   const handleStatusChange = (taskId, e) => {
-    e.stopPropagation(); // Prevent triggering task selection when changing status
+    e.stopPropagation(); 
     const newStatus = e.target.value;
     setTaskDescriptions((prev) =>
       prev.map((task) =>

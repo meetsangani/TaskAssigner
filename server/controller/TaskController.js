@@ -1,14 +1,13 @@
 const Task = require('../models/TaskModel');
 
-// Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.aggregate([
       {
         $lookup: {
           from: "descriptions", 
-          localField: "descriptionId", // Change this to "descriptionId" to match your model
-          foreignField: "_id", // Join with _id from descriptions
+          localField: "descriptionId", 
+          foreignField: "_id", 
           as: "descriptions",
         },
       },
@@ -41,7 +40,6 @@ exports.getAllTasks = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-// Create new task
 exports.createTask = async (req, res) => {
   try {
     console.log("Received task data:", req.body);
@@ -59,7 +57,6 @@ exports.createTask = async (req, res) => {
   }
 };
 
-// Get a single task
 exports.getTasks = async (req, res) => {
   try {
     const task = await Task.findById(req.params._id);
@@ -85,7 +82,6 @@ exports.updateStatus = async (req, res) => {
   }
 };
 
-// Delete task
 exports.deleteTask = async (req, res) => {
   try {
     const deletedTask = await Task.findByIdAndDelete(req.params.id);
